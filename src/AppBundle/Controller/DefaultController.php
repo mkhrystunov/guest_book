@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\GuestBookMessage;
+use AppBundle\Entity\User;
 use AppBundle\Form\GuestBookMessageType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -25,7 +26,7 @@ class DefaultController extends Controller
 
         return $this->render('default/index.html.twig', [
             'messages' => $messagesRepo->findAll(),
-            'message_form' => $this->createMessageForm()->createView(),
+            'message_form' => $this->createMessageForm($this->createMessageEntity())->createView(),
         ]);
     }
 
@@ -40,7 +41,7 @@ class DefaultController extends Controller
         $manager = $this->getDoctrine()->getManager();
         $messagesRepo = $manager->getRepository('AppBundle:GuestBookMessage');
 
-        $entity = new GuestBookMessage();
+        $entity = $this->createMessageEntity();
         $messageForm = $this->createMessageForm($entity);
 
         $messageForm->handleRequest($request);
@@ -61,10 +62,25 @@ class DefaultController extends Controller
     }
 
     /**
-     * @param GuestBookMessage|null $entity
+     * @return GuestBookMessage
+     */
+    private function createMessageEntity()
+    {
+        $message = new GuestBookMessage();
+
+        /** @var User $user */
+        if ($user = $this->getUser()) {
+            $message->setUsername($user->getUsername());
+        }
+
+        return $message;
+    }
+
+    /**
+     * @param GuestBookMessage $entity
      * @return Form
      */
-    private function createMessageForm($entity = null)
+    private function createMessageForm($entity)
     {
         return $this->createForm(GuestBookMessageType::class, $entity, [
             'action' => $this->generateUrl('new_message'),
