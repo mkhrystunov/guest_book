@@ -6,10 +6,11 @@
       <h1>Guest book</h1>
     </div>
 
+    <h2>Messages:</h2>
     {% for message in messages %}
       <div class="panel panel-info">
         <div class="panel-heading">
-          <h3 class="panel-title">{{ message.username }} {{ message.email }} wrote:</h3>
+          <h3 class="panel-title">{{ message.username }} {{ message.email ? '(' ~ message.email ~ ')' }} wrote:</h3>
         </div>
         <div class="panel-body">
           {{ message.text }}
@@ -19,5 +20,11 @@
         </div>
       </div>
     {% endfor %}
+
+    <h3>Add message</h3>
+    {{ form_start(message_form) }}
+    {{ form_widget(message_form) }}
+    <button class="btn btn-bg btn-primary btn-block">Submit</button>
+    {{ form_end(message_form) }}
   </div>
 {% endblock %}
