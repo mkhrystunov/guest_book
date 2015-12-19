@@ -2,6 +2,7 @@
 
 namespace AppBundle\DataFixtures\ORM;
 use AppBundle\Entity\GuestBookMessage;
+use AppBundle\GuestBook\MessageCreator;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 
@@ -17,7 +18,7 @@ class LoadGuestBookMessage implements FixtureInterface
         $systemMessage = new GuestBookMessage();
         $systemMessage
             ->setText('Welcome to guest book!')
-            ->setUsername('System');
+            ->setUsername(MessageCreator::SYSTEM_MESSAGE);
         $manager->persist($systemMessage);
 
         $message = new GuestBookMessage();

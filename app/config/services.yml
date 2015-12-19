@@ -7,3 +7,20 @@ services:
             - { name: doctrine.event_subscriber, connection: default }
         calls:
             - [ setAnnotationReader, [ '@annotation_reader' ] ]
+
+    doctrine.user_listener:
+        class: AppBundle\Doctrine\UserListener
+        arguments: ['@security.encoder_factory']
+        tags:
+            - { name: doctrine.event_listener, event: prePersist }
+            - { name: doctrine.event_listener, event: preUpdate }
+
+    guest_book.message_creator:
+        class: AppBundle\GuestBook\MessageCreator
+        arguments: ['@doctrine.orm.entity_manager']
+
+    guest_book.user_listener:
+        class: AppBundle\EventListener\UserListener
+        arguments: ['@guest_book.message_creator']
+        tags:
+            - { name: kernel.event_listener, event: guest_book.user_registered, method: onRegistered }
